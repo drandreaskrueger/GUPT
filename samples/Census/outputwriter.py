@@ -25,17 +25,23 @@ def write_results(output, outfile):
         writer.writerow(row)
         
 
-def csv_header(example_output):
+def csv_header(example_output, datacolumns=["result", "abs_diff"], extracols=[]):
     """
     header for CSV file
     """
     header=[]
-    for objects, name in zip(example_output[0:2], ["result", "abs_diff"]):
+    numcols=len(datacolumns)
+    for objects, name in zip(example_output[0:numcols], datacolumns):
         for i in range(len(objects)):
             header += [name+"%d"%i]
-    header += ["DP_type", "blocker", "epsilon", "gamma"]
+    header += ["DP_type", "blocker", "epsilon", "gamma"] + extracols
     return header
             
+def csv_header_aggregates(example_output, 
+                          datacolumns=["mean", "std", "stdrel"], 
+                          extracols=["repetitions"]):
+    return csv_header(example_output, datacolumns, extracols)
+    
 
 def report_results(result, result_nonprivate, DP_type, blocker, epsilon, gamma, outfile=None):
     """
@@ -48,3 +54,16 @@ def report_results(result, result_nonprivate, DP_type, blocker, epsilon, gamma, 
         write_results(output, outfile=outfile)
     output="%s diff %s with DP_type=%s blocker=%s epsilon=%s gamma=%s" % output
     return output
+
+def report_results_repeated(mean, std, DP_type, blocker, epsilon, gamma, repetitions, outfile=None):
+    """
+    compare with nonprivate result, and tell all parameters.
+    if outfile given, then also write to CSV file.
+    """
+    std_rel = [s/m for m, s in zip(mean, std)]
+    output = (mean, std, std_rel, DP_type, blocker, epsilon, gamma, repetitions)
+    if outfile:
+        write_results(output, outfile=outfile)
+    output="mean    %s\nstd     %s\nstd_rel %s\nat DP_type=%s blocker=%s epsilon=%s gamma=%s repetitions=%s" % output
+    return output
+
