@@ -1,4 +1,9 @@
 *.pyc
 *.py.log
+
+.project
+.pydevproject
+
 samples/Census/census-income.data
+samples/Census/census-experiment-output.csv
 
