@@ -40,3 +40,11 @@ those directories and execute the python script.
 
 ## Citations ##
 When citing the project, please use this [bib file](http://www.cs.berkeley.edu/~prmohan/papers/gupt.bib)
+
+## Forks & Issues ##
+To search github for all forks of this repo, try [search GUPT fork:only](https://github.com/search?q=GUPT+fork%3Aonly&type=Repositories). At 2017/August, no one seems to have improved GUPT.   
+
+As github 'issues' were disabled in the original repo, let's simply collect [issues in the GUPT wiki](https://github.com/prashmohan/GUPT/wiki/issues).  
+
+
+
