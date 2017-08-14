@@ -27,10 +27,12 @@ def run_nonprivate(outfile=None, outfile_aggregates=None):
     reader = censusdatadriver.get_reader()
     runtime = gupt.GuptRunTime(MeanComputer, reader, epsilon=0)
     
-    # returns type <class 'gupt.GuptOutput'>, so cast to list:
+    # Returns type <class 'gupt.GuptOutput'>. 
+    # Cast to list, to make similar to runtime.start() 
     result_nonprivate = list(runtime.start_nonprivate())
     
-    # result_nonprivate = result_nonprivate + result_nonprivate # synthetic 2 dimensions, for testing
+    # artificial 2nd dimension, just for testing these routines:
+    # result_nonprivate = result_nonprivate + result_nonprivate 
     
     if outfile:
         output=(result_nonprivate, [0]*len(result_nonprivate), 
@@ -42,9 +44,8 @@ def run_nonprivate(outfile=None, outfile_aggregates=None):
         
         if outfile_aggregates:
             output = [result_nonprivate] + list(output) # one more column-family
-            write_results(csv_header_aggregates(example_output=output), 
-                          outfile=outfile_aggregates)
-    
+            header = csv_header_aggregates(example_output=output)
+            write_results(header, outfile=outfile_aggregates)
     
     return result_nonprivate
 
@@ -52,6 +53,9 @@ def run_nonprivate(outfile=None, outfile_aggregates=None):
 def run_expt(epsilon, gamma, 
              result_nonprivate, outfile=None, 
              bl_from=1, bl_to=3, windsorized=True):
+    """
+    given parameters, run 1 to 6 experiments
+    """
     
     blockers = gupt.GuptRunTime.get_data_blockers()[bl_from-1:bl_to]
     # print blockers; exit()
@@ -93,11 +97,10 @@ def run_original_expt(result_nonprivate, outfile):
       
 ############
 
-def write_agg_header():
-    return 0
-
-
-def analyze_results(results, result_nonprivate):
+def analyze_results(results):  #, result_nonprivate):
+    """
+    mean and standard deviation
+    """
     res_dimensions = zip(*results)
     mean, std = [], []
      
@@ -114,6 +117,10 @@ def repeat_expt(epsilon, gamma,
                 repetitions=10,
                 outfile_singles=None, outfile_aggregates=None, 
                 data_blocker=1, windsorized=False):
+    """
+    repeat 10 times to be able to estimate standard deviation
+    """
+    
     
     blocker = gupt.GuptRunTime.get_data_blockers()[data_blocker-1]
     # 1 NaiveDataBlocker
@@ -147,7 +154,8 @@ def repeat_expt(epsilon, gamma,
         else:
             res=runtime.start_windsorized()
             
-        # res = res + res # for synthetic 2 dimensions, for testing
+        # artificial 2nd dimension, just for testing these routines:
+        # res = res + res
             
         print report_results(res, result_nonprivate, DP_mode, blocker, 
                              epsilon, gamma, outfile_singles)
@@ -161,7 +169,7 @@ def repeat_expt(epsilon, gamma,
     duration = time.clock() - starttime
     logger.info("%d repetitions took %.2f seconds" % (repetitions, duration))
     
-    mean, std = analyze_results(results, result_nonprivate)
+    mean, std = analyze_results(results) # , result_nonprivate)
     
     print report_results_repeated(mean, std, DP_mode, blocker,
                                   epsilon, gamma, repetitions,
@@ -173,13 +181,10 @@ def run_expt_many_times(result_nonprivate, repetitions=10,
                         data_blocker=1, windsorized=False,
                         outfile_singles=None, outfile_aggregates=None):
     """
-    original experiment given in https://github.com/prashmohan/GUPT
-    Runs 2 times with identical settings,
-    each time standard_DP and windsorized_DP,
-    while scanning through many epsilon & gamma values.
+    scanning through many epsilon & gamma values.
     """
-    for epsilon in numpy.arange(0.2, 10, 0.2):
-        for gamma in range(1, 7, 1):
+    for epsilon in numpy.arange(0.1, 2.2, 0.2):#(0.2, 10, 0.2):
+        for gamma in range(1, 10, 1):  # (1, 7, 1):
             
             repeat_expt(epsilon, gamma,
                         data_blocker=data_blocker, windsorized=windsorized,
@@ -213,7 +218,7 @@ if __name__ == '__main__':
     """
     
     run_expt_many_times(result_nonprivate, 
-                        repetitions=30,
+                        repetitions=50,
                         data_blocker=1, 
                         windsorized=False,
                         outfile_singles=outfile_singles, 
