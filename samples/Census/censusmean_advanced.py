@@ -178,7 +178,7 @@ def run_expt_many_times(result_nonprivate, repetitions=10,
     each time standard_DP and windsorized_DP,
     while scanning through many epsilon & gamma values.
     """
-    for epsilon in numpy.arange(0.25, 10, 0.25):
+    for epsilon in numpy.arange(0.2, 10, 0.2):
         for gamma in range(1, 7, 1):
             
             repeat_expt(epsilon, gamma,
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     """
     
     run_expt_many_times(result_nonprivate, 
-                        repetitions=20,
+                        repetitions=30,
                         data_blocker=1, 
                         windsorized=False,
                         outfile_singles=outfile_singles, 
